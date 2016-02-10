@@ -1,0 +1,23 @@
+.floatRight {
+    float: right;
+}
+
+a:hover {
+    cursor: pointer !important;
+}
+
+#fullSizeHeader {
+
+}
+
+body {
+    background: #282828 url(../images/dark.png);
+    color: #BBB;
+}
+
+#NodesConteiner {
+    width: 100%;
+    border-width: 0.0625em;
+    border-style: solid;
+    border-color: #d8d8d8;
+}
