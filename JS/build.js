@@ -9319,6 +9319,7 @@
 	 */
 	var EventInterface = {
 	  type: null,
+	  target: null,
 	  // currentTarget is set when dispatching; no use in copying it here
 	  currentTarget: emptyFunction.thatReturnsNull,
 	  eventPhase: null,
@@ -9352,8 +9353,6 @@
 	  this.dispatchConfig = dispatchConfig;
 	  this.dispatchMarker = dispatchMarker;
 	  this.nativeEvent = nativeEvent;
-	  this.target = nativeEventTarget;
-	  this.currentTarget = nativeEventTarget;
 	
 	  var Interface = this.constructor.Interface;
 	  for (var propName in Interface) {
@@ -9364,7 +9363,11 @@
 	    if (normalize) {
 	      this[propName] = normalize(nativeEvent);
 	    } else {
-	      this[propName] = nativeEvent[propName];
+	      if (propName === 'target') {
+	        this.target = nativeEventTarget;
+	      } else {
+	        this[propName] = nativeEvent[propName];
+	      }
 	    }
 	  }
 	
@@ -13213,7 +13216,10 @@
 	      }
 	    });
 	
-	    nativeProps.children = content;
+	    if (content) {
+	      nativeProps.children = content;
+	    }
+	
 	    return nativeProps;
 	  }
 	
@@ -18686,7 +18692,7 @@
 	
 	'use strict';
 	
-	module.exports = '0.14.6';
+	module.exports = '0.14.7';
 
 /***/ },
 /* 147 */
@@ -19664,11 +19670,15 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
+	function isAuth(val) {
+	    if (Boolean(val)) return { isAuth: true };else return { isAuth: false };
+	}
+	
 	var LoginForm = React.createClass({
 	    displayName: 'LoginForm',
 	
 	    getInitialState: function getInitialState() {
-	        return null;
+	        return isAuth();
 	    },
 	    componentDidMount: function componentDidMount() {
 	        _LoginStore2.default.addChangeListener(this._loginBtnClick);
@@ -19681,44 +19691,63 @@
 	
 	        return React.createElement(
 	            'form',
-	            null,
+	            { className: 'navbar-form navbar-right', role: 'form' },
 	            React.createElement(
-	                'fieldset',
-	                null,
+	                'div',
+	                { className: 'form-group' },
 	                React.createElement(
-	                    'legend',
-	                    null,
-	                    this.props.legend
+	                    'div',
+	                    { className: this.state.isAuth ? 'hidden' : '' },
+	                    React.createElement(
+	                        'label',
+	                        { className: 'sr-only', htmlFor: 'login' },
+	                        'Email'
+	                    ),
+	                    React.createElement('input', { type: 'email', className: 'form-control input-sm', id: 'login', placeholder: 'Login', ref: function ref(login) {
+	                            return _this.login = login;
+	                        } })
 	                ),
 	                React.createElement(
-	                    'ul',
-	                    null,
+	                    'div',
+	                    { className: this.state.isAuth ? '' : 'hidden' },
+	                    'Hello - %UserName%'
+	                )
+	            ),
+	            React.createElement(
+	                'div',
+	                { className: 'form-group' },
+	                React.createElement(
+	                    'div',
+	                    { className: this.state.isAuth ? 'hidden' : '' },
 	                    React.createElement(
-	                        'li',
-	                        { className: 'field' },
-	                        React.createElement('input', { className: 'wide text input', type: 'text', placeholder: 'Login', ref: function ref(login) {
-	                                return _this.login = login;
-	                            } })
+	                        'label',
+	                        { className: 'sr-only', htmlFor: 'password' },
+	                        'Пароль'
 	                    ),
+	                    React.createElement('input', { type: 'password', className: 'form-control input-sm', id: 'password', placeholder: 'Password', ref: function ref(password) {
+	                            return _this.password = password;
+	                        } })
+	                )
+	            ),
+	            React.createElement(
+	                'div',
+	                { className: 'form-group' },
+	                React.createElement(
+	                    'div',
+	                    { className: this.state.isAuth ? 'hidden' : '' },
 	                    React.createElement(
-	                        'li',
-	                        { className: 'field' },
-	                        React.createElement('input', { className: 'wide password input', type: 'password', placeholder: 'Password', ref: function ref(password) {
-	                                return _this.password = password;
-	                            } })
-	                    ),
+	                        'button',
+	                        { type: 'button', className: 'btn btn-default btn-sm', onClick: this._loginBtnClick },
+	                        'Login'
+	                    )
+	                ),
+	                React.createElement(
+	                    'div',
+	                    { className: this.state.isAuth ? '' : 'hidden' },
 	                    React.createElement(
-	                        'li',
-	                        { className: 'field' },
-	                        React.createElement(
-	                            'div',
-	                            { className: 'medium oval btn default' },
-	                            React.createElement(
-	                                'a',
-	                                { onClick: this._loginBtnClick },
-	                                'Login'
-	                            )
-	                        )
+	                        'button',
+	                        { type: 'button', className: 'btn btn-default btn-sm active', onClick: this._logoutBtnClick },
+	                        'Logout'
 	                    )
 	                )
 	            )
@@ -19727,6 +19756,7 @@
 	
 	    _loginBtnClick: function _loginBtnClick() {
 	        _LoginActions2.default.Login({ login: this.login.value, password: this.password.value });
+	        this.setState({ isAuth: true });
 	    }
 	});
 	
@@ -20154,7 +20184,7 @@
 	
 	module.exports = (0, _keymirror2.default)({
 	    LOGIN: null,
-	    LOGIN: null
+	    LOGOUT: null
 	});
 
 /***/ },
@@ -20534,19 +20564,37 @@
 	
 	var _LoginConstants2 = _interopRequireDefault(_LoginConstants);
 	
+	var _Model = __webpack_require__(169);
+	
+	var _Model2 = _interopRequireDefault(_Model);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	var LoginActions = {
 	    Login: function Login(login, password) {
 	        _AppDispatcher2.default.handleViewAction({
 	            actionType: _LoginConstants2.default.LOGIN,
-	            login: login,
-	            password: password
+	            isAuth: _Model2.default.checkLogin(login, password)
 	        });
 	    }
 	};
 	
 	module.exports = LoginActions;
+
+/***/ },
+/* 169 */
+/***/ function(module, exports) {
+
+	'use strict';
+	/* Тут обращение к базе */
+	
+	var LoginModel = {
+		checkLogin: function checkLogin(args) {
+			if (args.login == 'kj' && args.password == '123') return true;else return false;
+		}
+	};
+	
+	module.exports = LoginModel;
 
 /***/ }
 /******/ ]);
