@@ -9319,7 +9319,6 @@
 	 */
 	var EventInterface = {
 	  type: null,
-	  target: null,
 	  // currentTarget is set when dispatching; no use in copying it here
 	  currentTarget: emptyFunction.thatReturnsNull,
 	  eventPhase: null,
@@ -9353,6 +9352,8 @@
 	  this.dispatchConfig = dispatchConfig;
 	  this.dispatchMarker = dispatchMarker;
 	  this.nativeEvent = nativeEvent;
+	  this.target = nativeEventTarget;
+	  this.currentTarget = nativeEventTarget;
 	
 	  var Interface = this.constructor.Interface;
 	  for (var propName in Interface) {
@@ -9363,11 +9364,7 @@
 	    if (normalize) {
 	      this[propName] = normalize(nativeEvent);
 	    } else {
-	      if (propName === 'target') {
-	        this.target = nativeEventTarget;
-	      } else {
-	        this[propName] = nativeEvent[propName];
-	      }
+	      this[propName] = nativeEvent[propName];
 	    }
 	  }
 	
@@ -13216,10 +13213,7 @@
 	      }
 	    });
 	
-	    if (content) {
-	      nativeProps.children = content;
-	    }
-	
+	    nativeProps.children = content;
 	    return nativeProps;
 	  }
 	
@@ -18692,7 +18686,7 @@
 	
 	'use strict';
 	
-	module.exports = '0.14.7';
+	module.exports = '0.14.6';
 
 /***/ },
 /* 147 */
@@ -19670,15 +19664,11 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	function isAuth(val) {
-	    if (Boolean(val)) return { isAuth: true };else return { isAuth: false };
-	}
-	
 	var LoginForm = React.createClass({
 	    displayName: 'LoginForm',
 	
 	    getInitialState: function getInitialState() {
-	        return isAuth();
+	        return { isAuth: _LoginStore2.default.getStatus() };
 	    },
 	    componentDidMount: function componentDidMount() {
 	        _LoginStore2.default.addChangeListener(this._loginBtnClick);
@@ -19755,8 +19745,8 @@
 	    },
 	
 	    _loginBtnClick: function _loginBtnClick() {
-	        _LoginActions2.default.Login({ login: this.login.value, password: this.password.value });
-	        this.setState({ isAuth: true });
+	
+	        this.setState(_LoginActions2.default.Login({ login: this.login.value, password: this.password.value }));
 	    }
 	});
 	
@@ -19776,7 +19766,15 @@
 	
 	var CHANGE_EVENT = 'change';
 	
+	var isAuth = false;
+	function SetAuthStatus(status) {
+	    isAuth = status;
+	}
+	
 	var LoginStore = assign({}, EventEmitter.prototype, {
+	    getStatus: function getStatus() {
+	        return isAuth;
+	    },
 	    emitChange: function emitChange() {
 	        this.emit(CHANGE_EVENT);
 	    },
@@ -19790,6 +19788,10 @@
 	
 	AppDispatcher.register(function (action) {
 	    console.log(action);
+	
+	    SetAuthStatus(action.isAuth);
+	
+	    LoginStore.emitChange();
 	});
 	
 	module.exports = LoginStore;

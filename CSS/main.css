@@ -1,23 +1,7 @@
-.floatRight {
-    float: right;
-}
-
-a:hover {
-    cursor: pointer !important;
-}
-
-#fullSizeHeader {
-
-}
-
 body {
-    background: #282828 url(../images/dark.png);
-    color: #BBB;
+  background: url(../images/dark.png);
+  color: white;
 }
-
-#NodesConteiner {
-    width: 100%;
-    border-width: 0.0625em;
-    border-style: solid;
-    border-color: #d8d8d8;
+.navbar-form .form-group {
+  padding: 0 10px 0 0;
 }

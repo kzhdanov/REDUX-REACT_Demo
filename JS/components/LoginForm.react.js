@@ -3,16 +3,9 @@
 import LoginStore from '../stores/LoginStore';
 import LoginActions from '../actions/LoginActions';
 
-function isAuth(val) {
-  if( Boolean(val) )
-    return { isAuth: true }
-  else
-    return { isAuth: false }
-}
-
 let LoginForm = React.createClass({
     getInitialState: function() {
-        return isAuth();
+        return {isAuth: LoginStore.getStatus()};
     },
     componentDidMount: function() {
         LoginStore.addChangeListener(this._loginBtnClick);
@@ -49,7 +42,7 @@ let LoginForm = React.createClass({
     },
     _loginBtnClick: function() {
         LoginActions.Login( {login: this.login.value, password: this.password.value} );
-        this.setState({isAuth: true});
+        //this.setState({isAuth: true});
     }
 })
 

@@ -5,7 +5,15 @@ var assign = require('object-assign');
 
 var CHANGE_EVENT = 'change';
 
+let isAuth = false;
+function SetAuthStatus(status) {
+    isAuth = status;
+}
+
 var LoginStore = assign({}, EventEmitter.prototype, {
+    getStatus: function() {
+      return isAuth;
+    },
     emitChange: function() {
         this.emit(CHANGE_EVENT);
     },
@@ -19,6 +27,10 @@ var LoginStore = assign({}, EventEmitter.prototype, {
 
 AppDispatcher.register(function(action) {
     console.log(action);
+
+    SetAuthStatus(action.isAuth);
+
+    LoginStore.emitChange();
 });
 
 module.exports = LoginStore;
