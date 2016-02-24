@@ -1,11 +1,11 @@
-'use strict'
+'use strict';
 
 let webpack = require('webpack');
 
 module.exports = {
-    entry: './JS/App',
+    entry: './js/App',
     output: {
-    	filename: "./JS/build.js"
+    	filename: "./js/build.js"
     },
     watch: true,
     devtool: 'source-map',

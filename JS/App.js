@@ -1,13 +1,8 @@
-import {LoginForm} from './Components/LoginForm.react';
+import LoginForm from './components/LoginForm.react';
+import store from './Store';
+import {Provider} from 'react-redux';
 
-let Form = React.createClass({
-	render() {
-		return (
-			<div>
-				<LoginForm legend="Authorization form"/>
-			</div>
-		)
-	}
-})
-
-React.render(<Form />, document.getElementById('app'));
+React.render(<Provider store={store}>
+    <LoginForm />
+  </Provider>,
+  document.getElementById('app'));
