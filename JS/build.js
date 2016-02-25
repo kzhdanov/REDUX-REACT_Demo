@@ -9322,6 +9322,7 @@
 	 */
 	var EventInterface = {
 	  type: null,
+	  target: null,
 	  // currentTarget is set when dispatching; no use in copying it here
 	  currentTarget: emptyFunction.thatReturnsNull,
 	  eventPhase: null,
@@ -9355,8 +9356,6 @@
 	  this.dispatchConfig = dispatchConfig;
 	  this.dispatchMarker = dispatchMarker;
 	  this.nativeEvent = nativeEvent;
-	  this.target = nativeEventTarget;
-	  this.currentTarget = nativeEventTarget;
 	
 	  var Interface = this.constructor.Interface;
 	  for (var propName in Interface) {
@@ -9367,7 +9366,11 @@
 	    if (normalize) {
 	      this[propName] = normalize(nativeEvent);
 	    } else {
-	      this[propName] = nativeEvent[propName];
+	      if (propName === 'target') {
+	        this.target = nativeEventTarget;
+	      } else {
+	        this[propName] = nativeEvent[propName];
+	      }
 	    }
 	  }
 	
@@ -13216,7 +13219,10 @@
 	      }
 	    });
 	
-	    nativeProps.children = content;
+	    if (content) {
+	      nativeProps.children = content;
+	    }
+	
 	    return nativeProps;
 	  }
 	
@@ -18689,7 +18695,7 @@
 	
 	'use strict';
 	
-	module.exports = '0.14.6';
+	module.exports = '0.14.7';
 
 /***/ },
 /* 147 */
@@ -19657,11 +19663,11 @@
 
 	/* WEBPACK VAR INJECTION */(function(React) {'use strict';
 	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
 	var _reactRedux = __webpack_require__(159);
 	
@@ -19697,7 +19703,7 @@
 	  _createClass(LoginForm, [{
 	    key: '_loginBtnClick',
 	    value: function _loginBtnClick() {
-	      _Store2.default.dispatch(Actions.login());
+	      _Store2.default.dispatch(Actions.login(login.value, password.value));
 	    }
 	  }, {
 	    key: '_logoutBtnClick',
@@ -21249,23 +21255,10 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.increment = increment;
-	exports.decrement = decrement;
 	exports.login = login;
 	exports.logout = logout;
-	function increment() {
-	  return {
-	    type: 'INCREMENT'
-	  };
-	}
-	
-	function decrement() {
-	  return {
-	    type: 'DECREMENT'
-	  };
-	}
-	
-	function login() {
+	function login(login, password) {
+	  console.log(login, password);
 	  return {
 	    type: 'LOG_ON',
 	    login: { isAuth: true, Name: 'Вася' }
@@ -21286,7 +21279,7 @@
 	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
-	          value: true
+	  value: true
 	});
 	
 	var _redux = __webpack_require__(165);
@@ -21297,12 +21290,11 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	var store = (0, _redux.createStore)(_index2.default, {
-	          login: {
-	                    isAuth: false,
-	                    Name: 'Anon'
-	          }
-	});
+	var initialState = {
+	  login: { isAuth: false, Name: 'Anon' }
+	};
+	
+	var store = (0, _redux.createStore)(_index2.default, initialState);
 	
 	exports.default = store;
 
@@ -21369,14 +21361,14 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.default = Login;
-	function Login() {
+	exports.default = login;
+	function login() {
 	  var state = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 	  var action = arguments[1];
 	
 	  switch (action.type) {
 	    case 'LOG_ON':
-	      return action.login;
+	      return Object.assign({}, action.login);
 	    case 'LOG_OFF':
 	      return action.login;
 	    default:

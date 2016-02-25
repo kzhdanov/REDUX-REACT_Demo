@@ -5,7 +5,7 @@ import store from '../Store';
 
 class LoginForm extends Component {
   _loginBtnClick() {
-    store.dispatch(Actions.login());
+    store.dispatch(Actions.login(login.value, password.value));
   }
 
   _logoutBtnClick() {

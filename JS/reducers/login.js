@@ -1,7 +1,7 @@
-export default function Login(state = {}, action) {
+export default function login(state = {}, action) {
   switch (action.type) {
     case 'LOG_ON':
-      return action.login;
+      return Object.assign({}, action.login);
     case 'LOG_OFF':
       return action.login;
     default:
